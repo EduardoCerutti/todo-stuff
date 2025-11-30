@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { useParams, useRouter } from 'next/navigation'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ArrowLeft, Edit } from 'lucide-react'
-import { useUpdateTodo } from '@/hooks/useUpdateTodo'
 
 export default function TodoDetailPage() {
   const params = useParams()
@@ -15,16 +14,6 @@ export default function TodoDetailPage() {
   const todoId = Number(params.id)
 
   const { data: todo, isLoading, error } = useTodo(todoId)
-  const updateTodoMutation = useUpdateTodo()
-
-  const handleToggleComplete = async () => {
-    if (!todo) return
-
-    await updateTodoMutation.mutateAsync({
-      id: todo.id,
-      data: { completed: !todo.completed },
-    })
-  }
 
   if (error) {
     return (
@@ -98,14 +87,9 @@ export default function TodoDetailPage() {
                   <Checkbox
                     id={`todo-status-${todo.id}`}
                     checked={todo.completed}
-                    onCheckedChange={handleToggleComplete}
-                    disabled={updateTodoMutation.isPending}
-                    className="cursor-pointer"
+                    onClick={(e) => e.stopPropagation()}
                   />
-                  <label
-                    htmlFor={`todo-status-${todo.id}`}
-                    className="cursor-pointer text-sm"
-                  >
+                  <label htmlFor={`todo-status-${todo.id}`} className="text-sm">
                     {todo.completed ? 'Completed' : 'Incomplete'}
                   </label>
                 </div>

@@ -80,6 +80,14 @@ export default function TodosPage() {
                     <ArrowLeftFromLine />
                     Logout
                   </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => router.push('/todos/create')}
+                  >
+                    <Plus />
+                    Add todo
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>

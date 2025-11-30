@@ -34,7 +34,7 @@ export function useCreateTodo() {
 
           return {
             ...oldData,
-            todos: [...oldData.todos, newTodo],
+            todos: [newTodo, ...oldData.todos],
           }
         }
       )

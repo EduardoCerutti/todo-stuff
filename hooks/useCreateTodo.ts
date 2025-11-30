@@ -1,13 +1,23 @@
 import { createTodo } from '@/lib/api/createTodo'
 import { Todo } from '@/types/todo'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { getUserInfo } from '@/lib/auth'
 
 export function useCreateTodo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: { todo: string; completed: boolean; userId: number }) =>
-      createTodo(data),
+    mutationFn: (data: { todo: string; completed: boolean }) => {
+      const userInfo = getUserInfo()
+      if (!userInfo) {
+        throw new Error('User not authenticated')
+      }
+
+      return createTodo({
+        ...data,
+        userId: userInfo.id,
+      })
+    },
     onSuccess: (newTodo) => {
       queryClient.setQueriesData<{
         todos: Todo[]

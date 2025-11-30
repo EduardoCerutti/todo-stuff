@@ -133,7 +133,7 @@ export default function LoginPage() {
                 className="w-full"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Entrando...' : 'Login'}
+                {form.formState.isSubmitting ? 'Please wait…' : 'Login'}
               </Button>
             </form>
           </Form>

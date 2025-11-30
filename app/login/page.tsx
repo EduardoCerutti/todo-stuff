@@ -1,9 +1,10 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Mail, Lock } from 'lucide-react'
+import { Lock, ShieldUser } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -23,10 +24,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'An email is required')
-    .regex(/^[^\s@]+@[^\s@]+.[^\s@]+$/, 'Invalid email'),
+  username: z.string().min(1, 'An username is required'),
   password: z
     .string()
     .min(1, 'A password is required')
@@ -36,16 +34,23 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
+  const router = useRouter()
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   })
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log('Login data:', data)
+  async function onSubmit(data: LoginFormValues) {
+    void (() => {
+      document.cookie =
+        'auth-token=dummy-token; path=/; max-age=86400; SameSite=Lax;'
+    })()
+
+    router.push('/todos')
   }
 
   return (
@@ -66,19 +71,19 @@ export default function LoginPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Username</FormLabel>
 
                     <FormControl>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                        <ShieldUser className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
                         <Input
-                          type="email"
-                          autoComplete="email"
-                          placeholder="your@email.com"
+                          type="username"
+                          autoComplete="username"
+                          placeholder="your username"
                           className="pl-9"
                           {...field}
                         />
@@ -115,7 +120,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full cursor-pointer"
+                className="w-full"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? 'Entrando...' : 'Login'}

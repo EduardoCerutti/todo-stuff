@@ -21,6 +21,8 @@ export function storeLoginData(loginData: User) {
   localStorage.setItem('user', JSON.stringify(userInfo))
 }
 
+// I used this to get emily's todos, but since she has only two I left without
+// so you can test the pagination with lot's of data
 export function getUserInfo(): Omit<
   User,
   'accessToken' | 'refreshToken'

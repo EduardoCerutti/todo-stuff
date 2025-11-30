@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Ellipsis } from 'lucide-react'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 
 export default function TodosPage() {
   const searchParams = useSearchParams()
@@ -97,6 +97,25 @@ export default function TodosPage() {
     }
 
     return pages
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-xl">
+          <CardContent className="pt-6">
+            <p className="text-center text-destructive">
+              Error loading todos. Please try again.
+            </p>
+            <div className="mt-4 flex justify-center">
+              <Button variant="outline" onClick={() => router.push('/todos')}>
+                Refresh page
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (

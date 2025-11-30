@@ -21,6 +21,7 @@ import { useUpdateTodo } from '@/hooks/useUpdateTodo'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft } from 'lucide-react'
 import { useEffect } from 'react'
+import { useDeleteTodo } from '@/hooks/useDeleteTodo'
 
 const editTodoSchema = z.object({
   todo: z.string().min(1, 'Todo text is required'),
@@ -36,6 +37,7 @@ export default function EditTodoPage() {
 
   const { data: todo, isLoading } = useTodo(todoId)
   const updateTodoMutation = useUpdateTodo()
+  const deleteTodoMutation = useDeleteTodo()
 
   const form = useForm<EditTodoFormValues>({
     resolver: zodResolver(editTodoSchema),
@@ -66,6 +68,15 @@ export default function EditTodoPage() {
     }
   }
 
+  const onDelete = async () => {
+    try {
+      await deleteTodoMutation.mutateAsync({ id: todoId })
+      router.push(returnTo)
+    } catch (error) {
+      console.error('Failed to delete todo:', error)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -83,6 +94,7 @@ export default function EditTodoPage() {
               <Skeleton className="h-6 w-28" />
             </div>
             <div className="flex justify-end gap-2">
+              <Skeleton className="h-9 w-9" />
               <Skeleton className="h-9 w-18" />
               <Skeleton className="h-9 w-30" />
             </div>
@@ -147,6 +159,9 @@ export default function EditTodoPage() {
               />
 
               <div className="flex justify-end gap-2">
+                <Button type="button" variant="destructive" onClick={onDelete}>
+                  <Trash2 />
+                </Button>
                 <Button
                   type="button"
                   variant="outline"

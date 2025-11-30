@@ -94,6 +94,7 @@ export default function TodoDetailPage() {
             >
               <ArrowLeft />
             </Button>
+
             <CardTitle className="text-2xl font-bold">Todo Details</CardTitle>
           </div>
         </CardHeader>
@@ -119,14 +120,17 @@ export default function TodoDetailPage() {
                 <Skeleton className="h-5 w-24" />
                 <Skeleton className="h-28 w-full" />
               </div>
+
               <div className="flex flex-col gap-2">
                 <Skeleton className="h-5 w-14" />
                 <Skeleton className="h-6 w-32" />
               </div>
+
               <div className="flex flex-col gap-2">
                 <Skeleton className="h-5 w-14" />
                 <Skeleton className="h-6 w-6" />
               </div>
+
               <div className="flex justify-end gap-2 pt-4">
                 <Skeleton className="h-9 w-9" />
                 <Skeleton className="h-9 w-18" />
@@ -163,6 +167,7 @@ export default function TodoDetailPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Status</FormLabel>
+
                       <div className="flex items-center gap-2">
                         <FormControl>
                           <Checkbox
@@ -172,6 +177,7 @@ export default function TodoDetailPage() {
                             className="cursor-pointer"
                           />
                         </FormControl>
+
                         <label
                           htmlFor={`todo-status-${todo.id}`}
                           className="text-sm cursor-pointer"
@@ -199,6 +205,7 @@ export default function TodoDetailPage() {
                   >
                     <Trash2 />
                   </Button>
+
                   <Button
                     type="button"
                     variant="outline"
@@ -206,6 +213,7 @@ export default function TodoDetailPage() {
                   >
                     Back
                   </Button>
+
                   <Button type="submit" disabled={updateTodoMutation.isPending}>
                     {updateTodoMutation.isPending
                       ? 'Saving...'

@@ -1,7 +1,5 @@
 'use client'
 
-import { CheckSquare } from 'lucide-react'
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTodos } from '@/hooks/useTodos'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -19,6 +17,16 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from '@/components/ui/pagination'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Ellipsis } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/components/ui/button'
 
 export default function TodosPage() {
   const searchParams = useSearchParams()
@@ -50,6 +58,11 @@ export default function TodosPage() {
     urlParams.set('skip', newSkip.toString())
 
     router.push(`?${urlParams.toString()}`)
+  }
+
+  const handleLogout = () => {
+    document.cookie = 'auth-token=; path=/; max-age=0; SameSite=Lax;'
+    router.push('/login')
   }
 
   function getPageNumbers() {
@@ -93,7 +106,26 @@ export default function TodosPage() {
         <CardHeader className="flex flex-col gap-4">
           <div className="flex flex-row items-center justify-between w-full">
             <CardTitle className="text-2xl font-bold">Todos</CardTitle>
-            <CheckSquare className="text-primary size-8" />
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={cn(
+                  buttonVariants({ variant: 'ghost' }),
+                  'cursor-pointer'
+                )}
+              >
+                <Ellipsis />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="flex gap-2">

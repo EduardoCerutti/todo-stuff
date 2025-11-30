@@ -1,6 +1,6 @@
-import { Login } from '@/types/login'
+import { User } from '@/types/user'
 
-export function storeLoginData(loginData: Login) {
+export function storeLoginData(loginData: User) {
   const maxAge = 7 * 24 * 60 * 60
   const isSecure = process.env.NODE_ENV === 'production'
   const secureFlag = isSecure ? '; Secure' : ''
@@ -22,7 +22,7 @@ export function storeLoginData(loginData: Login) {
 }
 
 export function getUserInfo(): Omit<
-  Login,
+  User,
   'accessToken' | 'refreshToken'
 > | null {
   if (typeof window === 'undefined') return null

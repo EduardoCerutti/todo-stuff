@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -19,7 +19,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useTodo } from '@/hooks/useTodo'
 import { useUpdateTodo } from '@/hooks/useUpdateTodo'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Trash2 } from 'lucide-react'
 import { useEffect } from 'react'
 import { useDeleteTodo } from '@/hooks/useDeleteTodo'
 
@@ -33,6 +33,7 @@ type EditTodoFormValues = z.infer<typeof editTodoSchema>
 export default function EditTodoPage() {
   const router = useRouter()
   const params = useParams()
+  const searchParams = useSearchParams()
   const todoId = Number(params.id)
 
   const { data: todo, isLoading } = useTodo(todoId)
@@ -71,7 +72,7 @@ export default function EditTodoPage() {
   const onDelete = async () => {
     try {
       await deleteTodoMutation.mutateAsync({ id: todoId })
-      router.push(returnTo)
+      router.push(searchParams.get('returnTo') || '/todos')
     } catch (error) {
       console.error('Failed to delete todo:', error)
     }
@@ -152,7 +153,9 @@ export default function EditTodoPage() {
                       />
                     </FormControl>
                     <div>
-                      <FormLabel>Completed</FormLabel>
+                      <FormLabel>
+                        {field.value ? 'Completed' : 'Incomplete'}
+                      </FormLabel>
                     </div>
                   </FormItem>
                 )}

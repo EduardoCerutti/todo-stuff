@@ -149,20 +149,27 @@ export default function TodosPage() {
                   <Skeleton className="h-5 w-5 rounded-sm" />
                 </div>
               ))
-            : data?.todos.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center cursor-pointer justify-between rounded-lg border bg-muted/40 p-4 hover:bg-muted/60 transition-colors"
-                  onClick={() => router.push(`/todos/${item.id}`)}
-                >
-                  <p>{item.todo}</p>
-                  <Checkbox
-                    id={`toggle-${item.id}`}
-                    checked={item.completed}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-              ))}
+            : data?.todos.map((item) => {
+                const currentUrl = `/todos${searchParams.toString() ? `?${searchParams.toString()}` : ''}`
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center cursor-pointer justify-between rounded-lg border bg-muted/40 p-4 hover:bg-muted/60 transition-colors"
+                    onClick={() =>
+                      router.push(
+                        `/todos/${item.id}?returnTo=${encodeURIComponent(currentUrl)}`
+                      )
+                    }
+                  >
+                    <p>{item.todo}</p>
+                    <Checkbox
+                      id={`toggle-${item.id}`}
+                      checked={item.completed}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                )
+              })}
 
           {isLoading ? (
             <div className="flex items-center justify-center gap-3">

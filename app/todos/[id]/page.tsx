@@ -4,14 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTodo } from '@/hooks/useTodo'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ArrowLeft, Edit } from 'lucide-react'
 
 export default function TodoDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const todoId = Number(params.id)
+  const returnTo = searchParams.get('returnTo') || '/todos'
 
   const { data: todo, isLoading, error } = useTodo(todoId)
 
@@ -24,7 +26,7 @@ export default function TodoDetailPage() {
               Error loading todo. Please try again.
             </p>
             <div className="mt-4 flex justify-center">
-              <Button variant="outline" onClick={() => router.push('/todos')}>
+              <Button variant="outline" onClick={() => router.push(returnTo)}>
                 Back to Todos
               </Button>
             </div>
@@ -42,7 +44,7 @@ export default function TodoDetailPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push('/todos')}
+              onClick={() => router.push(returnTo)}
             >
               <ArrowLeft />
             </Button>
@@ -103,10 +105,16 @@ export default function TodoDetailPage() {
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => router.push('/todos')}>
+                <Button variant="outline" onClick={() => router.push(returnTo)}>
                   Back
                 </Button>
-                <Button onClick={() => router.push(`/todos/${todo.id}/edit`)}>
+                <Button
+                  onClick={() =>
+                    router.push(
+                      `/todos/${todo.id}/edit?returnTo=${encodeURIComponent(returnTo)}`
+                    )
+                  }
+                >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit
                 </Button>

@@ -25,7 +25,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Ellipsis } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 
 export default function TodosPage() {
@@ -109,10 +108,7 @@ export default function TodosPage() {
 
             <DropdownMenu>
               <DropdownMenuTrigger
-                className={cn(
-                  buttonVariants({ variant: 'ghost' }),
-                  'cursor-pointer'
-                )}
+                className={buttonVariants({ variant: 'ghost' })}
               >
                 <Ellipsis />
               </DropdownMenuTrigger>
@@ -156,13 +152,14 @@ export default function TodosPage() {
             : data?.todos.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between rounded-lg border bg-muted/40 p-4"
+                  className="flex items-center cursor-pointer justify-between rounded-lg border bg-muted/40 p-4 hover:bg-muted/60 transition-colors"
+                  onClick={() => router.push(`/todos/${item.id}`)}
                 >
                   <p>{item.todo}</p>
                   <Checkbox
                     id={`toggle-${item.id}`}
                     checked={item.completed}
-                    className="cursor-pointer"
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               ))}
@@ -213,7 +210,6 @@ export default function TodosPage() {
                           onPageChange(page)
                         }}
                         isActive={currentPage === page}
-                        className="cursor-pointer"
                       >
                         {page}
                       </PaginationLink>

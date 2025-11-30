@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Ellipsis } from 'lucide-react'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { ErrorDialog } from '@/components/ErrorDialog'
 
 export default function TodosPage() {
   const searchParams = useSearchParams()
@@ -34,7 +35,7 @@ export default function TodosPage() {
   const limit = Number(searchParams.get('limit') ?? 9)
   const skip = Number(searchParams.get('skip') ?? 0)
 
-  const { data, isLoading, error } = useTodos({ limit, skip })
+  const { data, isLoading, error, isError } = useTodos({ limit, skip })
 
   const currentPage = Math.floor(skip / limit) + 1
   const totalPages = data?.total ? Math.ceil(data.total / limit) : 1
@@ -99,25 +100,6 @@ export default function TodosPage() {
     return pages
   }
 
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-xl">
-          <CardContent className="pt-6">
-            <p className="text-center text-destructive">
-              Error loading todos. Please try again.
-            </p>
-            <div className="mt-4 flex justify-center">
-              <Button variant="outline" onClick={() => router.push('/todos')}>
-                Refresh page
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-xl">
@@ -157,8 +139,22 @@ export default function TodosPage() {
           </div>
         </CardHeader>
 
+        {isError && (
+          <ErrorDialog title="Error.">
+            <>
+              <p className="text-destructive">{error?.message}</p>
+
+              <div className="flex justify-end w-full">
+                <Button variant="outline" onClick={() => router.refresh()}>
+                  Refresh page
+                </Button>
+              </div>
+            </>
+          </ErrorDialog>
+        )}
+
         <CardContent className="flex flex-col gap-4">
-          {isLoading
+          {isLoading || isError
             ? Array.from({ length: itemsPerPage }).map((_, index) => (
                 <div
                   key={index}
@@ -190,7 +186,7 @@ export default function TodosPage() {
                 )
               })}
 
-          {isLoading ? (
+          {isLoading || isError ? (
             <div className="flex items-center justify-center gap-3">
               <Skeleton className="h-8 w-20" />
               <Skeleton className="h-8 w-8" />

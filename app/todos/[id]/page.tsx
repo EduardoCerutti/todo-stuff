@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useUpdateTodo } from '@/hooks/useUpdateTodo'
 import { useDeleteTodo } from '@/hooks/useDeleteTodo'
 import { useEffect } from 'react'
+import { ErrorDialog } from '@/components/ErrorDialog'
 
 const editTodoSchema = z.object({
   todo: z.string().min(1, 'Todo text is required'),
@@ -37,7 +38,7 @@ export default function TodoDetailPage() {
   const todoId = Number(params.id)
   const returnTo = searchParams.get('returnTo') || '/todos'
 
-  const { data: todo, isLoading, error } = useTodo(todoId)
+  const { data: todo, isLoading, error, isError } = useTodo(todoId)
   const updateTodoMutation = useUpdateTodo()
   const deleteTodoMutation = useDeleteTodo()
 
@@ -81,25 +82,6 @@ export default function TodoDetailPage() {
     }
   }
 
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-xl">
-          <CardContent className="pt-6">
-            <p className="text-center text-destructive">
-              Error loading todo. Please try again.
-            </p>
-            <div className="mt-4 flex justify-center">
-              <Button variant="outline" onClick={() => router.push(returnTo)}>
-                Back to Todos
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-xl">
@@ -116,8 +98,22 @@ export default function TodoDetailPage() {
           </div>
         </CardHeader>
 
+        {isError && (
+          <ErrorDialog title="Error.">
+            <>
+              <p className="text-destructive">{error?.message}</p>
+
+              <div className="flex justify-end w-full">
+                <Button variant="outline" onClick={() => router.refresh()}>
+                  Refresh page
+                </Button>
+              </div>
+            </>
+          </ErrorDialog>
+        )}
+
         <CardContent className="flex flex-col gap-6">
-          {isLoading ? (
+          {isLoading || isError ? (
             <>
               <div className="flex flex-col gap-2">
                 <Skeleton className="h-5 w-24" />

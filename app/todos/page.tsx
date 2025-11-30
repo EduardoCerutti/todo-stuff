@@ -10,6 +10,15 @@ import { Input } from '@/components/ui/input'
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Label } from '@/components/ui/label'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '@/components/ui/pagination'
 
 export default function TodosPage() {
   const searchParams = useSearchParams()
@@ -20,6 +29,9 @@ export default function TodosPage() {
 
   const { data, isLoading, error } = useTodos({ limit, skip })
 
+  const currentPage = Math.floor(skip / limit) + 1
+  const totalPages = data?.total ? Math.ceil(data.total / limit) : 1
+
   const [itemsPerPage, setItemsPerPage] = useState(limit)
 
   function onChangeItemsPerpage(newValue: string) {
@@ -27,11 +39,53 @@ export default function TodosPage() {
 
     const urlParams = new URLSearchParams(searchParams)
     urlParams.set('limit', newValue)
+    urlParams.set('skip', '0')
 
     router.push(`?${urlParams.toString()}`)
   }
 
-  console.log(data)
+  function onPageChange(page: number) {
+    const newSkip = (page - 1) * limit
+    const urlParams = new URLSearchParams(searchParams)
+    urlParams.set('skip', newSkip.toString())
+
+    router.push(`?${urlParams.toString()}`)
+  }
+
+  function getPageNumbers() {
+    const pages: (number | 'ellipsis')[] = []
+    const maxVisiblePages = 7
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i)
+      }
+    } else {
+      pages.push(1)
+
+      if (currentPage <= 4) {
+        for (let i = 2; i <= 5; i++) {
+          pages.push(i)
+        }
+        pages.push('ellipsis')
+        pages.push(totalPages)
+      } else if (currentPage >= totalPages - 3) {
+        pages.push('ellipsis')
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pages.push(i)
+        }
+      } else {
+        pages.push('ellipsis')
+        pages.push(currentPage - 1)
+        pages.push(currentPage)
+        pages.push(currentPage + 1)
+        pages.push('ellipsis')
+        pages.push(totalPages)
+      }
+    }
+
+    return pages
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -78,6 +132,80 @@ export default function TodosPage() {
                   />
                 </div>
               ))}
+
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-3">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-8" />
+              <Skeleton className="h-8 w-8" />
+              <Skeleton className="h-8 w-8" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          ) : totalPages > 1 ? (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (currentPage > 1) {
+                        onPageChange(currentPage - 1)
+                      }
+                    }}
+                    className={
+                      currentPage === 1
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
+                  />
+                </PaginationItem>
+
+                {getPageNumbers().map((page, index) => {
+                  if (page === 'ellipsis') {
+                    return (
+                      <PaginationItem key={`ellipsis-${index}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    )
+                  }
+
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          onPageChange(page)
+                        }}
+                        isActive={currentPage === page}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                })}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (currentPage < totalPages) {
+                        onPageChange(currentPage + 1)
+                      }
+                    }}
+                    className={
+                      currentPage === totalPages
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          ) : null}
         </CardContent>
       </Card>
     </div>

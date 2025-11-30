@@ -84,7 +84,7 @@ export default function EditTodoPage() {
             </div>
             <div className="flex justify-end gap-2">
               <Skeleton className="h-9 w-18" />
-              <Skeleton className="h-9 w-26" />
+              <Skeleton className="h-9 w-30" />
             </div>
           </CardContent>
         </Card>
@@ -131,7 +131,7 @@ export default function EditTodoPage() {
                 control={form.control}
                 name="completed"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                  <FormItem className="flex flex-row items-center gap-2">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
@@ -139,7 +139,7 @@ export default function EditTodoPage() {
                         className="cursor-pointer"
                       />
                     </FormControl>
-                    <div className="space-y-1 leading-none">
+                    <div>
                       <FormLabel>Completed</FormLabel>
                     </div>
                   </FormItem>

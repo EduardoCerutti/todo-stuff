@@ -1,10 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Lock, ShieldUser } from 'lucide-react'
+import { AlertCircle, Lock, ShieldUser } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -22,8 +23,10 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useLogin } from '@/hooks/useLogin'
 import { storeLoginData } from '@/lib/auth'
+import { AxiosError } from 'axios'
 
 const loginSchema = z.object({
   username: z.string().min(1, 'An username is required'),
@@ -37,6 +40,7 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
   const router = useRouter()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const login = useLogin()
 
@@ -49,6 +53,7 @@ export default function LoginPage() {
   })
 
   async function onSubmit(data: LoginFormValues) {
+    setErrorMessage(null)
     try {
       const response = await login.mutateAsync({
         username: data.username,
@@ -60,6 +65,11 @@ export default function LoginPage() {
       router.push('/todos')
     } catch (error) {
       console.error('Login failed:', error)
+      if (error instanceof AxiosError && error.response?.data?.message) {
+        setErrorMessage(error.response.data.message)
+      } else {
+        setErrorMessage('An unexpected error occurred. Please try again.')
+      }
     }
   }
 
@@ -79,6 +89,14 @@ export default function LoginPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {errorMessage && (
+                <Alert variant="destructive">
+                  <AlertCircle />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{errorMessage}</AlertDescription>
+                </Alert>
+              )}
+
               <FormField
                 control={form.control}
                 name="username"

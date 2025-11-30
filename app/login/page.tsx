@@ -22,6 +22,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useLogin } from '@/hooks/useLogin'
+import { storeLoginData } from '@/lib/auth'
 
 const loginSchema = z.object({
   username: z.string().min(1, 'An username is required'),
@@ -36,6 +38,8 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const router = useRouter()
 
+  const login = useLogin()
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -45,12 +49,18 @@ export default function LoginPage() {
   })
 
   async function onSubmit(data: LoginFormValues) {
-    void (() => {
-      document.cookie =
-        'auth-token=dummy-token; path=/; max-age=86400; SameSite=Lax;'
-    })()
+    try {
+      const response = await login.mutateAsync({
+        username: data.username,
+        password: data.password,
+      })
 
-    router.push('/todos')
+      storeLoginData(response)
+
+      router.push('/todos')
+    } catch (error) {
+      console.error('Login failed:', error)
+    }
   }
 
   return (

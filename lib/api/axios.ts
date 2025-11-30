@@ -3,6 +3,7 @@ import axios, {
   AxiosInstance,
   InternalAxiosRequestConfig,
 } from 'axios'
+import { clearLoginData } from '@/lib/auth'
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
@@ -41,8 +42,7 @@ axiosInstance.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           if (typeof document !== 'undefined') {
-            document.cookie =
-              'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+            clearLoginData()
             window.location.href = '/login'
           }
           break

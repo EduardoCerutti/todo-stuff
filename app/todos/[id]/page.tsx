@@ -6,7 +6,29 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ArrowLeft, Edit } from 'lucide-react'
+import { ArrowLeft, Trash2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Textarea } from '@/components/ui/textarea'
+import { useUpdateTodo } from '@/hooks/useUpdateTodo'
+import { useDeleteTodo } from '@/hooks/useDeleteTodo'
+import { useEffect } from 'react'
+
+const editTodoSchema = z.object({
+  todo: z.string().min(1, 'Todo text is required'),
+  completed: z.boolean(),
+})
+
+type EditTodoFormValues = z.infer<typeof editTodoSchema>
 
 export default function TodoDetailPage() {
   const params = useParams()
@@ -16,6 +38,48 @@ export default function TodoDetailPage() {
   const returnTo = searchParams.get('returnTo') || '/todos'
 
   const { data: todo, isLoading, error } = useTodo(todoId)
+  const updateTodoMutation = useUpdateTodo()
+  const deleteTodoMutation = useDeleteTodo()
+
+  const form = useForm<EditTodoFormValues>({
+    resolver: zodResolver(editTodoSchema),
+    defaultValues: {
+      todo: '',
+      completed: false,
+    },
+  })
+
+  useEffect(() => {
+    if (todo) {
+      form.reset({
+        todo: todo.todo,
+        completed: todo.completed,
+      })
+    }
+  }, [todo, form])
+
+  const onSubmit = async (values: EditTodoFormValues) => {
+    try {
+      await updateTodoMutation.mutateAsync({
+        id: todoId,
+        data: values,
+      })
+    } catch (error) {
+      console.error('Failed to update todo:', error)
+    }
+  }
+
+  const onDelete = async () => {
+    if (!confirm('Are you sure you want to delete this todo?')) {
+      return
+    }
+    try {
+      await deleteTodoMutation.mutateAsync({ id: todoId })
+      router.push(returnTo)
+    } catch (error) {
+      console.error('Failed to delete todo:', error)
+    }
+  }
 
   if (error) {
     return (
@@ -56,8 +120,8 @@ export default function TodoDetailPage() {
           {isLoading ? (
             <>
               <div className="flex flex-col gap-2">
-                <Skeleton className="h-5 w-14" />
-                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-28 w-full" />
               </div>
               <div className="flex flex-col gap-2">
                 <Skeleton className="h-5 w-14" />
@@ -68,58 +132,92 @@ export default function TodoDetailPage() {
                 <Skeleton className="h-6 w-6" />
               </div>
               <div className="flex justify-end gap-2 pt-4">
+                <Skeleton className="h-9 w-9" />
                 <Skeleton className="h-9 w-18" />
-                <Skeleton className="h-9 w-20" />
+                <Skeleton className="h-9 w-30" />
               </div>
             </>
           ) : todo ? (
-            <>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Task
-                </label>
-                <p className="text-lg">{todo.todo}</p>
-              </div>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="todo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Task</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter your todo task..."
+                          className="min-h-32 text-lg"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Status
-                </label>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`todo-status-${todo.id}`}
-                    checked={todo.completed}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <label htmlFor={`todo-status-${todo.id}`} className="text-sm">
-                    {todo.completed ? 'Completed' : 'Incomplete'}
+                <FormField
+                  control={form.control}
+                  name="completed"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <FormControl>
+                          <Checkbox
+                            id={`todo-status-${todo.id}`}
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="cursor-pointer"
+                          />
+                        </FormControl>
+                        <label
+                          htmlFor={`todo-status-${todo.id}`}
+                          className="text-sm cursor-pointer"
+                        >
+                          {field.value ? 'Completed' : 'Incomplete'}
+                        </label>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Todo ID
                   </label>
+                  <p className="text-sm text-muted-foreground">#{todo.id}</p>
                 </div>
-              </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Todo ID
-                </label>
-                <p className="text-sm text-muted-foreground">#{todo.id}</p>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => router.push(returnTo)}>
-                  Back
-                </Button>
-                <Button
-                  onClick={() =>
-                    router.push(
-                      `/todos/${todo.id}/edit?returnTo=${encodeURIComponent(returnTo)}`
-                    )
-                  }
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit
-                </Button>
-              </div>
-            </>
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={onDelete}
+                    disabled={deleteTodoMutation.isPending}
+                  >
+                    <Trash2 />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.push(returnTo)}
+                  >
+                    Back
+                  </Button>
+                  <Button type="submit" disabled={updateTodoMutation.isPending}>
+                    {updateTodoMutation.isPending
+                      ? 'Saving...'
+                      : 'Save Changes'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
           ) : null}
         </CardContent>
       </Card>

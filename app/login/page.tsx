@@ -55,10 +55,12 @@ export default function LoginPage() {
           <CardTitle className="text-2xl font-bold text-center">
             Login
           </CardTitle>
+
           <CardDescription className="text-center">
             Enter your credentials to access your account.
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -68,11 +70,14 @@ export default function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
+
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+
                         <Input
                           type="email"
+                          autoComplete="email"
                           placeholder="your@email.com"
                           className="pl-9"
                           {...field}
@@ -89,11 +94,14 @@ export default function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
+
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+
                         <Input
                           type="password"
+                          autoComplete="current-password"
                           placeholder="••••••••"
                           className="pl-9"
                           {...field}
@@ -104,9 +112,10 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full cursor-pointer"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? 'Entrando...' : 'Login'}

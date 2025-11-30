@@ -106,6 +106,7 @@ export default function TodosPage() {
         <CardHeader className="flex flex-col gap-4">
           <div className="flex flex-row items-center justify-between w-full">
             <CardTitle className="text-2xl font-bold">Todos</CardTitle>
+
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={cn(
@@ -115,6 +116,7 @@ export default function TodosPage() {
               >
                 <Ellipsis />
               </DropdownMenuTrigger>
+
               <DropdownMenuContent>
                 <DropdownMenuGroup>
                   <DropdownMenuItem

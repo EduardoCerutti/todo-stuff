@@ -65,6 +65,7 @@ export default function TodoDetailPage() {
         id: todoId,
         data: values,
       })
+      router.push(returnTo)
     } catch (error) {
       console.error('Failed to update todo:', error)
     }

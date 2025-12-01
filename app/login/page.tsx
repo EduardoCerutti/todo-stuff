@@ -25,7 +25,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useLogin } from '@/hooks/useLogin'
-import { storeLoginData } from '@/lib/auth'
 import { AxiosError } from 'axios'
 
 const loginSchema = z.object({
@@ -55,12 +54,10 @@ export default function LoginPage() {
   async function onSubmit(data: LoginFormValues) {
     setErrorMessage(null)
     try {
-      const response = await login.mutateAsync({
+      await login.mutateAsync({
         username: data.username,
         password: data.password,
       })
-
-      storeLoginData(response)
 
       router.push('/todos')
     } catch (error) {

@@ -1,7 +1,7 @@
 import { createTodo } from '@/lib/api/createTodo'
 import { Todos } from '@/types/todo'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getUserInfo } from '@/lib/auth'
+import { getUserInfo } from '@/lib/storage/auth'
 import { addTodoToCache } from '@/lib/storage/todo'
 
 export function useCreateTodo() {

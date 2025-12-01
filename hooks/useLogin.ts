@@ -1,4 +1,5 @@
 import { login } from '@/lib/api/login'
+import { storeLoginData } from '@/lib/storage/auth'
 import { useMutation } from '@tanstack/react-query'
 
 export function useLogin() {
@@ -10,5 +11,8 @@ export function useLogin() {
       username: string
       password: string
     }) => login(username, password),
+    onSuccess: (data) => {
+      storeLoginData(data)
+    },
   })
 }

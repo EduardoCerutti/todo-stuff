@@ -4,3 +4,10 @@ export type Todo = {
   completed: boolean
   userId: number
 }
+
+export type Todos = {
+  todos: Todo[]
+  skip: number
+  limit: number
+  total: number
+}

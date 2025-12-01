@@ -1,5 +1,5 @@
 import { createTodo } from '@/lib/api/createTodo'
-import { Todo } from '@/types/todo'
+import { Todos } from '@/types/todo'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getUserInfo } from '@/lib/auth'
 
@@ -19,12 +19,7 @@ export function useCreateTodo() {
       })
     },
     onSuccess: (newTodo) => {
-      queryClient.setQueriesData<{
-        todos: Todo[]
-        skip: number
-        limit: number
-        total: number
-      }>(
+      queryClient.setQueriesData<Todos>(
         {
           predicate: (query) =>
             Array.isArray(query.queryKey) && query.queryKey[0] === 'todos',

@@ -20,7 +20,7 @@ function handleAuth(request: NextRequest) {
   return NextResponse.next()
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   return (
     handleRootRedirect(request) || handleAuth(request) || NextResponse.next()
   )

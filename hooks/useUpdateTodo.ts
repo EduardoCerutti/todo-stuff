@@ -1,6 +1,7 @@
 import { updateTodo } from '@/lib/api/updateTodo'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Todo, Todos } from '@/types/todo'
+import { updateTodoInCache } from '@/lib/storage'
 
 export function useUpdateTodo() {
   const queryClient = useQueryClient()
@@ -14,6 +15,8 @@ export function useUpdateTodo() {
       data: { todo?: string; completed?: boolean }
     }) => updateTodo(id, data),
     onSuccess: (updatedTodo) => {
+      updateTodoInCache(updatedTodo)
+
       queryClient.setQueryData<Todo>(['todo', updatedTodo.id], updatedTodo)
 
       queryClient.setQueriesData<Todos>(

@@ -109,3 +109,44 @@ export function removeTodoFromCache(id: number): void {
     console.warn('Failed to remove todo from cache:', error)
   }
 }
+
+export function updateTodoInCache(updatedTodo: Todo): void {
+  try {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key || !key.startsWith('todos:')) {
+        continue
+      }
+
+      try {
+        const cachedData = localStorage.getItem(key)
+        if (!cachedData) {
+          continue
+        }
+
+        const todosData = JSON.parse(cachedData) as Todos
+        const todoIndex = todosData.todos.findIndex(
+          (todo) => todo.id === updatedTodo.id
+        )
+
+        if (todoIndex !== -1) {
+          const updatedTodos = [...todosData.todos]
+          updatedTodos[todoIndex] = updatedTodo
+          const updatedData: Todos = {
+            ...todosData,
+            todos: updatedTodos,
+          }
+          localStorage.setItem(key, JSON.stringify(updatedData))
+        }
+      } catch {
+        continue
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to update todo in cache:', error)
+  }
+}

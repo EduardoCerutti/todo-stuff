@@ -195,3 +195,23 @@ export function addTodoToCache(newTodo: Todo): void {
     console.warn('Failed to add todo to cache:', error)
   }
 }
+
+export function clearTodosCache(): void {
+  try {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const keysToRemove: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith('todos:')) {
+        keysToRemove.push(key)
+      }
+    }
+
+    keysToRemove.forEach((key) => localStorage.removeItem(key))
+  } catch (error) {
+    console.warn('Failed to clear todos cache:', error)
+  }
+}

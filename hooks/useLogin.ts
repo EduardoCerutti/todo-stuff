@@ -1,8 +1,11 @@
 import { login } from '@/lib/api/login'
 import { storeLoginData } from '@/lib/storage/auth'
-import { useMutation } from '@tanstack/react-query'
+import { clearTodosCache } from '@/lib/storage/todo'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export function useLogin() {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: ({
       username,
@@ -13,6 +16,9 @@ export function useLogin() {
     }) => login(username, password),
     onSuccess: (data) => {
       storeLoginData(data)
+
+      clearTodosCache()
+      queryClient.invalidateQueries({ queryKey: ['todos'] })
     },
   })
 }

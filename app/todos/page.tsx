@@ -54,6 +54,7 @@ function TodosContent() {
 
   const handleLogout = () => {
     document.cookie = 'auth-token=; path=/; max-age=0; SameSite=Lax;'
+    localStorage.clear()
     router.push('/login')
   }
 

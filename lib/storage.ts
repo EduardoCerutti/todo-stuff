@@ -150,3 +150,48 @@ export function updateTodoInCache(updatedTodo: Todo): void {
     console.warn('Failed to update todo in cache:', error)
   }
 }
+
+export function addTodoToCache(newTodo: Todo): void {
+  try {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key || !key.startsWith('todos:')) {
+        continue
+      }
+
+      if (!key.startsWith('todos:0:')) {
+        continue
+      }
+
+      try {
+        const cachedData = localStorage.getItem(key)
+        if (!cachedData) {
+          continue
+        }
+
+        const todosData = JSON.parse(cachedData) as Todos
+
+        const todoExists = todosData.todos.some(
+          (todo) => todo.id === newTodo.id
+        )
+
+        if (!todoExists) {
+          const updatedTodos = [newTodo, ...todosData.todos]
+          const updatedData: Todos = {
+            ...todosData,
+            todos: updatedTodos,
+          }
+          localStorage.setItem(key, JSON.stringify(updatedData))
+        }
+      } catch {
+        continue
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to add todo to cache:', error)
+  }
+}

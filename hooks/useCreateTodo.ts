@@ -2,6 +2,7 @@ import { createTodo } from '@/lib/api/createTodo'
 import { Todos } from '@/types/todo'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getUserInfo } from '@/lib/auth'
+import { addTodoToCache } from '@/lib/storage'
 
 export function useCreateTodo() {
   const queryClient = useQueryClient()
@@ -19,6 +20,8 @@ export function useCreateTodo() {
       })
     },
     onSuccess: (newTodo) => {
+      addTodoToCache(newTodo)
+
       queryClient.setQueriesData<Todos>(
         {
           predicate: (query) =>

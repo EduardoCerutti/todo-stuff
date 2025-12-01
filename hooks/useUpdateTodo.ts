@@ -1,7 +1,7 @@
 import { updateTodo } from '@/lib/api/updateTodo'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Todo, Todos } from '@/types/todo'
-import { updateTodoInCache } from '@/lib/storage'
+import { updateTodoInCache } from '@/lib/storage/todo'
 
 export function useUpdateTodo() {
   const queryClient = useQueryClient()

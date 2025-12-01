@@ -1,6 +1,6 @@
 import { getTodos } from '@/lib/api/getTodos'
 import { useQuery } from '@tanstack/react-query'
-import { getTodosCache, setTodosCache } from '@/lib/storage'
+import { getTodosCache, setTodosCache } from '@/lib/storage/todo'
 
 export function useTodos({ skip = 0, limit = 10 }) {
   return useQuery({

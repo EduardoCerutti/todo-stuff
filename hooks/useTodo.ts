@@ -1,6 +1,6 @@
 import { getTodo } from '@/lib/api/getTodo'
 import { useQuery } from '@tanstack/react-query'
-import { findTodoInCache } from '@/lib/storage'
+import { findTodoInCache } from '@/lib/storage/todo'
 
 export function useTodo(id: number) {
   return useQuery({

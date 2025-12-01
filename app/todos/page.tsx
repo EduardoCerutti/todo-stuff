@@ -5,7 +5,7 @@ import { useTodos } from '@/hooks/useTodos'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 import { TodosPagination } from '@/components/TodosPagination'
@@ -20,7 +20,7 @@ import { ArrowLeftFromLine, Ellipsis, Plus } from 'lucide-react'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { ErrorDialog } from '@/components/ErrorDialog'
 
-export default function TodosPage() {
+function TodosContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -162,5 +162,36 @@ export default function TodosPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function TodosPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+          <Card className="w-full max-w-xl">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold">Todos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4">
+                {Array.from({ length: 9 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border bg-muted/40 p-4"
+                  >
+                    <Skeleton className="h-5 w-[70%]" />
+                    <Skeleton className="h-5 w-5 rounded-sm" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <TodosContent />
+    </Suspense>
   )
 }

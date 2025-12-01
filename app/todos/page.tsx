@@ -76,18 +76,18 @@ function TodosContent() {
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={handleLogout}
-                  >
-                    <ArrowLeftFromLine />
-                    Logout
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem
-                    className="cursor-pointer"
                     onClick={() => router.push('/todos/create')}
                   >
                     <Plus />
                     Add todo
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <ArrowLeftFromLine />
+                    Logout
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>

@@ -1,6 +1,7 @@
 import { deleteTodo } from '@/lib/api/deleteTodo'
 import { Todos } from '@/types/todo'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { removeTodoFromCache } from '@/lib/storage'
 
 export function useDeleteTodo() {
   const queryClient = useQueryClient()
@@ -8,6 +9,8 @@ export function useDeleteTodo() {
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteTodo(id),
     onSuccess: (deletedTodo) => {
+      removeTodoFromCache(deletedTodo.id)
+
       queryClient.setQueriesData<Todos>(
         {
           predicate: (query) =>

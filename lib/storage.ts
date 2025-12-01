@@ -72,3 +72,40 @@ export function findTodoInCache(id: number): Todo | null {
     return null
   }
 }
+
+export function removeTodoFromCache(id: number): void {
+  try {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key || !key.startsWith('todos:')) {
+        continue
+      }
+
+      try {
+        const cachedData = localStorage.getItem(key)
+        if (!cachedData) {
+          continue
+        }
+
+        const todosData = JSON.parse(cachedData) as Todos
+        const filteredTodos = todosData.todos.filter((todo) => todo.id !== id)
+
+        if (filteredTodos.length !== todosData.todos.length) {
+          const updatedData: Todos = {
+            ...todosData,
+            todos: filteredTodos,
+          }
+          localStorage.setItem(key, JSON.stringify(updatedData))
+        }
+      } catch {
+        continue
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to remove todo from cache:', error)
+  }
+}
